@@ -9,48 +9,55 @@ class Game
     Game.start()
   end
 
-  private
+  protected
 
   def start
     tie = false
     player = 1
     rules() #prints the game rules to the console
     until player1.victory || player2.victory || tie
-      print(board)
-      space = input(turn[player])
-      update(player, space)
+      board()
+      #print the board
+      #ask the player to take their turn
+      #ask the board for an update
+      #check for winner or tie
+      # change the turn
       player = player == 1 ? 2 : 1
     end
+    # when there is a winner or tie
+    # print the final board
+    # if its a tie, declare a cat's game
+    # otherwise, declare the winner
+    # ask if they would like to play again
     print(board)
-    winner = player1.victory ? "Player 1" : "Player 2" # fix this
-    puts("#{winner} wins the game!")
+
   end
 
-  def input(player)
-    print "#{player} turn. Select a space: "
+  # def input(player)
+  #   print "#{player} turn. Select a space: "
 
-    space = gets.chomp
-    space
-    # ask the player for input
-    # check validation of the input 
-    # if valid, update the input, otherwise, ask again
-  end
+  #   space = gets.chomp
+  #   space
+  #   # ask the player for input
+  #   # check validation of the input 
+  #   # if valid, update the input, otherwise, ask again
+  # end
 
-  def update(player, space)
-    #update the board 
-    if self.board.update(player, space) == "invalid"
-      puts("That space is already taken!")
-      space = input(player)
-      update(player, space)
-    end
-  end
+  # def update(player, space)
+  #   #update the board 
+  #   if self.board.update(player, space) == "invalid"
+  #     puts("That space is already taken!")
+  #     space = input(player)
+  #     update(player, space)
+  #   end
+  # end
 
-  def print(board)
-    print(board.row1)
-    print("\n#{board.divider}")
-    print(board.row2)
-    print("\n#{board.divider}")
-    print(board.row3)
+  def board()
+    puts(board.row1.join)
+    puts(board.divider)
+    puts(board.row2.join)
+    puts(board.divider)
+    puts(board.row3.join)
   end
 
   public
@@ -111,11 +118,26 @@ class Board
 end
 
 class Player
-  def initialize(mark)
-    @mark = mark
-    @victory = false
+  def initialize(type)
+    @type = type
   end
   # should player class hold the turn as a class variable??
+  # player makes the turn decision
 end
 
 tic_tac_toe = Game.new
+
+
+## Problems I need to address:
+## How do I determine the winner? 
+## How do I determine if there is a tie?
+## Classes are starting to get muddled
+## ideas:
+## Separate the board display from the internal game 
+## ie. have a separate array that is tracking player moves
+## this array is the one that determines winner
+## iterate through the 3 rows looking for 3 in a row
+## iterate through the 3 columns looking for 3 in a row
+## then check the top left, middle, and bottom right
+## then check the top right, middle, and bottom left
+## if there are no winners and the array is full then its a tie
