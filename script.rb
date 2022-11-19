@@ -122,19 +122,21 @@ class Board
 
   def update_moves(player, validated_input)
     # update the moves hash with the new input
-
-    # moves[row][col] = player's mark
+    row_key = validated_input[0]
+    col_key = validated_input[1]
+    moves[row_key][col_key] = player.mark
+    moves
   end
 
   
 end
 
 class Player
-  attr_reader :type, :number
+  attr_reader :mark, :number
   attr_accessor :turn
 
-  def initialize(type, number)
-    @type = type
+  def initialize(mark, number)
+    @mark = mark
     @number = number
     @turn = false
   end
