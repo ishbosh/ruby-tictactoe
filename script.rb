@@ -22,7 +22,7 @@ class Game
     # if its a tie, declare a cat's game
     # otherwise, declare the winner
     # ask if they would like to play again
-    print(board)
+    show_board()
 
   end
 
@@ -72,10 +72,9 @@ class Game
     if winner then return winner end
     #check diagonals for winner
     winner = count_diagonals()
-    if winner then return winner
-    else
-      nil_count = row_grid.map {|row| row.count('nil')}
-      if nil_count.sum == 0 then return 'tie' end
+    if winner then return winner end
+    unless row_grid.flatten.include?(nil)
+      return 'tie'
     end
   end
 
@@ -109,8 +108,8 @@ class Game
         board.moves[:mid][:mid],
         board.moves[:bot][:right]
       ]
-    x_count = [tl_to_br.count, bl_to_tr.count]
-    o_count = [tl_to_br.count, bl_to_tr.count]
+    x_count = [tl_to_br.count('X'), bl_to_tr.count('X')]
+    o_count = [tl_to_br.count('O'), bl_to_tr.count('O')]
     if x_count[0] == 3 || x_count[1] == 3
       return 'X'
     elsif o_count[0] == 3 || o_count[1] == 3
@@ -160,15 +159,15 @@ class Board
       return false
     end
     keys = input.split('-')
-    if board.moves.to_s.include?(keys[0]) && board.moves.to_s.include?(keys[1])
-      return true
+    keys[0] = keys[0].to_sym
+    keys[1] = keys[1].to_sym
+    if moves.include?(keys[0]) 
+      if moves[keys[0]].include?(keys[1]) && moves[keys[0]][keys[1]] == nil
+          return true
+      end
     else
       return false
     end
-  end
-    
-    #check the moves hash for valid input and return whether it is valid
-    # if the key is not found, also return invalid/false
   end
 
   def update(player, selection_keys)
@@ -229,15 +228,15 @@ class Board
     index_array = convert_to_index(selection_keys)
     row_index = index_array[0]
     col_index = index_array[1]
-    display_array[row_index][col_index] = " #{player.mark} "
+    @display_array[row_index][col_index] = " #{player.mark} "
   end
 
   def update_moves(player, selection_keys)
     # update the moves hash with the new input
     row_key = selection_keys[0]
     col_key = selection_keys[1]
-    moves[row_key][col_key] = player.mark
-    moves
+    @moves[row_key][col_key] = player.mark
+    @moves
   end
 
   
@@ -264,11 +263,19 @@ class Player
   end
 
   def take_turn(board)
-    # ask for player input
-    print "Player #{number} turn: "
     # get the player's input
-    validated_input = input(board)
-    selection_keys = convert_to_keys(validated_input)
+    valid = false
+    until valid
+      # ask for player input
+      print "Player #{number} (#{mark}) turn: "
+      # get player input for the board
+      input = gets.chomp
+      # validate player input
+      valid = board.valid?(input)
+      unless valid then puts 'Invalid move.' end
+    end
+    puts ''
+    selection_keys = convert_to_keys(input)
     selection_keys
   end
 
@@ -281,33 +288,6 @@ class Player
     keys
   end
 
-  def input(board)
-    valid = false
-    until valid
-      # get player input for the board
-      input = gets.chomp
-      # validate player input
-      valid = board.valid?(input)
-    end
-    input
-  end
-  # should player class hold the turn as a class variable??
-  # player makes the turn decision
 end
 
 tic_tac_toe = Game.new
-
-
-## Problems I need to address:
-## How do I determine the winner? 
-## How do I determine if there is a tie?
-## Classes are starting to get muddled
-## ideas:
-## Separate the board display from the internal game 
-## ie. have a separate array that is tracking player moves
-## this array is the one that determines winner
-## iterate through the 3 rows looking for 3 in a row
-## iterate through the 3 columns looking for 3 in a row
-## then check the top left, middle, and bottom right
-## then check the top right, middle, and bottom left
-## if there are no winners and the array is full then its a tie
