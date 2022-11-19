@@ -59,7 +59,7 @@ class Game
 end
 
 class Board
-  attr_reader :divider, :board, :row1, :row2, :row3, :moves
+  attr_reader :divider, :board, :display_array, :moves
 
   def initiallize
     @board = build()
@@ -70,60 +70,71 @@ class Board
     # if the key is not found, also return invalid/false
   end
 
-  def update(player, validated_input)
+  def update(player, selection_keys)
     #update_display
-    update_display(player, validated_input)
+    update_display(player, selection_keys)
     #update moves hash
-    update_moves(player, validated_input)
+    update_moves(player, selection_keys)
   end
 
   private
 
   def build
-    @row = 
-      [
-        ['   ', '|', '   ','|','   '],
-        ['   ', '|', '   ','|','   '],
-        ['   ', '|', '   ','|','   ']
-      ]
+    # display_array & divider is what will be displayed on the board
+    @display_array = 
+      [ #  0           2         4  <--Column indexes
+        ['   ', '|', '   ','|','   '], # 0 
+        ['   ', '|', '   ','|','   '], # 1
+        ['   ', '|', '   ','|','   ']  # 2
+      ]                                # ^-- Row indexes 
     @divider = '-----------'
+    # moves is the locations of each move
     @moves = 
       {
         top: {left: nil, mid: nil, right: nil}, 
         mid: {left: nil, mid: nil, right: nil},
         bot: {left: nil, mid: nil, right: nil}
       }
-    return row, divider, moves
+    return display_array, divider, moves
   end
 
-  def update_display(player, validated_input)
-    player == 1 ? mark = ' X ' : mark = ' O '
-    case space
-    when 1
-      self.row1[0] == '   ' ? self.row1[0] = mark : return "invalid"
-    when 2
-      self.row1[2] == '   ' ? self.row1[2] = mark : return "invalid"
-    when 3
-      self.row1[4] == '   ' ? self.row1[4] = mark : return "invalid"
-    when 4
-      self.row2[0] == '   ' ? self.row2[0] = mark : return "invalid"
-    when 5
-      self.row2[2] == '   ' ? self.row2[2] = mark : return "invalid"
-    when 6
-      self.row2[4] == '   ' ? self.row2[4] = mark : return "invalid"
-    when 7
-      self.row3[0] == '   ' ? self.row3[0] = mark : return "invalid"
-    when 8
-      self.row3[2] == '   ' ? self.row3[2] = mark : return "invalid"
-    when 9
-      self.row3[4] == '   ' ? self.row3[4] = mark : return "invalid"
-    end
+  def convert_to_index(selection_keys)
+    # converts moves keys to display_array indexes
+    row_key = selection_keys[0]
+    col_key = selection_keys[1]
+    row_index =
+      case row_key
+      when :top
+        0
+      when :mid
+        1
+      when :bot
+        2
+      end
+    col_index =
+      case col_key
+      when :left
+        0
+      when :mid
+        2
+      when :right
+        4
+      end
+      return row_index, col_index
   end
 
-  def update_moves(player, validated_input)
+  def update_display(player, selection_keys)
+    # Get the indexes of the selection. Row then Col
+    index_array = convert_to_index(selection_keys)
+    row_index = index_array[0]
+    col_index = index_array[1]
+    display_array[row_index][col_index] = " #{player.mark} "
+  end
+
+  def update_moves(player, selection_keys)
     # update the moves hash with the new input
-    row_key = validated_input[0]
-    col_key = validated_input[1]
+    row_key = selection_keys[0]
+    col_key = selection_keys[1]
     moves[row_key][col_key] = player.mark
     moves
   end
