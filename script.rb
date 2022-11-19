@@ -5,31 +5,17 @@ class Game
     @board = Board.new
     @player1 = Player.new('X', 1)
     @player2 = Player.new('O', 2)
-    self.start()
+    start()
   end
 
   private
 
   def start
-    tie = false
-    rules() #prints the game rules to the console
+    #print the game rules to the console
+    rules()
     # ask who will go first
-
-    until tie # fix this line
-      # change the turn
-      if player1.turn?
-        player1.change_turn
-      # update player to current player
-      player = player1.turn? ? player1 : player2
-      #print the board
-      show_board(board)
-      #ask the player to take their turn
-      selection_keys = player.take_turn(board)
-      #ask the board for an update
-      board.update(player, selection_keys)
-      #check for winner or tie
-      #
-    end
+    decide_first_turn()
+    game_loop()
     # when there is a winner or tie
     # print the final board
     # if its a tie, declare a cat's game
@@ -39,7 +25,26 @@ class Game
 
   end
 
-  def show_board(board)
+  def game_loop
+    tie = false
+    until tie # fix this line
+      # update player to current player
+      player = player1.turn? ? player1 : player2
+      #print the board
+      show_board()
+      #ask the player to take their turn
+      selection_keys = player.take_turn(board)
+      #ask the board for an update
+      board.update(player, selection_keys)
+      #check for winner or tie
+      check_for_winner()
+      # change the turns (called on both players to swap each one's turn value)
+      player1.change_turn
+      player2.change_turn
+    end
+  end
+
+  def show_board
     board.display_array.each_with_index do |array, index|
       puts array.join
       if index == 0 || index == 1
@@ -47,20 +52,86 @@ class Game
       end
     end
     puts ''
-    # puts(board.divider)
-    # puts(board.row2.join)
-    # puts(board.divider)
-    # puts(board.row3.join)
+  end
+
+  def check_for_winner
+    row_keys = [:top, :mid, :bot]
+    row_grid = row_keys.map do |row|
+      board.moves[row].map {|k, v| v}
+    end
+    # convert rows to clumns
+    col_grid = row_grid.transpose
+
+    #check rows for winner
+    winner = count_marks(row_grid)
+    if winner then return winner end
+    #check columns for winner
+    winner = count_marks(col_grid)
+    if winner then return winner end
+    #check diagonals for winner
+    winner = count_diagonals()
+    if winner then return winner
+    else
+      nil_count = row_grid.map {|row| row.count('nil')}
+      if nil_count.sum == 0 then return 'tie' end
+    end
+  end
+
+  def count_marks(grid)
+    winner = nil
+    x_count = grid.map {|row| row.count('X')}
+    o_count = grid.map {|row| row.count('O')}
+
+    results = {X: x_count, O: o_count}
+    results.each do |mark, counts|
+      counts.each do |count|
+        if count == 3
+          winner = mark.to_s
+        end
+      end
+      winner
+    end
+    winner
+  end
+
+  def count_diagonals
+    tl_to_br = 
+      [
+        board.moves[:top][:left], 
+        board.moves[:mid][:mid], 
+        board.moves[:bot][:right]
+      ]
+    bl_to_tr = 
+      [
+        board.moves[:bot][:left],
+        board.moves[:mid][:mid],
+        board.moves[:bot][:right]
+      ]
+    x_count = [tl_to_br.count, bl_to_tr.count]
+    o_count = [tl_to_br.count, bl_to_tr.count]
+    if x_count[0] == 3 || x_count[1] == 3
+      return 'X'
+    elsif o_count[0] == 3 || o_count[1] == 3
+      return 'O'
+    end
   end
 
   def decide_first_turn
-    puts "Which player will go first, 1 or 2?"
-    print "Player: "
-    until player == 1 || player == 2
+    player = nil
+    until player == '1' || player == '2'
+      puts "Which player will go first, 1 or 2?"
+      print "Player: "
       player = gets.chomp
     end
+    puts '___________'
+    puts ''
+    if player == '1'
+      player1.change_turn
+    elsif player == '2'
+      player2.change_turn
+    end
   end
-  
+
   public
 
   def rules
@@ -175,8 +246,8 @@ class Player
   end
 
   # if it is this player's turn, switch turns
-  def change_turn(player)
-    player.turn? ? player.turn = false : player.turn = true
+  def change_turn
+    self.turn? ? self.turn = false : self.turn = true
   end
 
   def take_turn(board)
