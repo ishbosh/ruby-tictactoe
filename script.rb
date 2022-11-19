@@ -11,6 +11,7 @@ class Game
   private
 
   def start
+    @winner = nil
     #print the game rules to the console
     rules()
     # ask who will go first
@@ -27,7 +28,7 @@ class Game
 
   def game_loop
     tie = false
-    until tie # fix this line
+    until tie || @winner
       # update player to current player
       player = player1.turn? ? player1 : player2
       #print the board
@@ -37,7 +38,8 @@ class Game
       #ask the board for an update
       board.update(player, selection_keys)
       #check for winner or tie
-      check_for_winner()
+      @winner = check_for_winner()
+      if @winner == 'tie' then tie = true end
       # change the turns (called on both players to swap each one's turn value)
       player1.change_turn
       player2.change_turn
@@ -137,10 +139,10 @@ class Game
   def rules
     #print the game rules to the console
     puts('Get 3 in a row. X goes first.')
-    puts('Select space by number.') 
-    puts('Top row is 1, 2, 3')
-    puts('Middle row is 4, 5, 6')
-    puts('Bottom row is 7, 8, 9')
+    puts('Select space by typing in the location.') 
+    puts('Use a - to separate the words.')
+    puts('Examples: ')
+    puts('top-left  bot-right  mid-mid')
     puts('')
   end
 
@@ -154,6 +156,17 @@ class Board
   end
 
   def valid?(input)
+    unless input.include?('-')
+      return false
+    end
+    keys = input.split('-')
+    if board.moves.to_s.include?(keys[0]) && board.moves.to_s.include?(keys[1])
+      return true
+    else
+      return false
+    end
+  end
+    
     #check the moves hash for valid input and return whether it is valid
     # if the key is not found, also return invalid/false
   end
