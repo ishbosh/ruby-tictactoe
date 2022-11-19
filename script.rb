@@ -3,9 +3,8 @@ class Game
   
   def initialize
     @board = Board.new
-    @player1 = Player.new('X')
-    @player2 = Player.new('O')
-    @turn = [nil, "Player 1 (X)", "Player 2 (O)"]
+    @player1 = Player.new('X', 1)
+    @player2 = Player.new('O', 2)
     Game.start()
   end
 
@@ -13,16 +12,16 @@ class Game
 
   def start
     tie = false
-    player = 1
     rules() #prints the game rules to the console
-    until player1.victory || player2.victory || tie
-      board()
+    until player1.victory || player2.victory || tie # fix this line
       #print the board
+      board()
       #ask the player to take their turn
+      
       #ask the board for an update
       #check for winner or tie
       # change the turn
-      player = player == 1 ? 2 : 1
+
     end
     # when there is a winner or tie
     # print the final board
@@ -75,7 +74,7 @@ class Game
 end
 
 class Board
-  attr_reader :divider, :board, :row1, :row2, :row3
+  attr_reader :divider, :board, :row1, :row2, :row3, :moves
 
   def initiallize
     @board = build()
@@ -88,7 +87,13 @@ class Board
     @row2 = ['   ', '|', '   ','|','   ']
     @row3 = ['   ', '|', '   ','|','   ']
     @divider = '-----------'
-    return row1, row2, row3, divider
+    @moves = 
+      {
+        top: {left: nil, mid: nil, right: nil}, 
+        mid: {left: nil, mid: nil, right: nil},
+        bot: {left: nil, mid: nil, right: nil}
+      }
+    return row1, row2, row3, divider, moves
   end
 
   def update(player, space)
@@ -118,8 +123,43 @@ class Board
 end
 
 class Player
-  def initialize(type)
+  attr_reader :type, :number
+  attr_accessor :turn
+
+  def initialize(type, number)
     @type = type
+    @number = number
+    @turn = false
+  end
+
+  # ask player if it is their turn
+  def turn?
+    turn
+  end
+
+  # if it is this player's turn, switch turns
+  def change_turn(player)
+    player.turn? ? player.turn = false : player.turn = true
+  end
+
+  def take_turn(board)
+    # ask for player input
+    print "Player #{number} turn: "
+    # get the player's input
+    selection = input(board)
+    selection
+  end
+
+  private
+
+  # get player input for the board
+  def input(board)
+    valid = false
+    until valid
+      input = gets.chomp
+      valid = board.valid?(input)
+    end
+    input
   end
   # should player class hold the turn as a class variable??
   # player makes the turn decision
