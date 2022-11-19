@@ -5,25 +5,38 @@ class Game
     @board = Board.new
     @player1 = Player.new('X', 1)
     @player2 = Player.new('O', 2)
-    start()
+    play()
   end
 
   private
 
-  def start
+  def restart
+    @board = Board.new
+    @player1.turn = false
+    @player2.turn = false
+    play()
+  end
+
+  def play
     @winner = nil
-    #print the game rules to the console
     rules()
-    # ask who will go first
     decide_first_turn()
     game_loop()
-    # when there is a winner or tie
-    # print the final board
-    # if its a tie, declare a cat's game
-    # otherwise, declare the winner
-    # ask if they would like to play again
     show_board()
-
+    if @winner == 'tie'
+      puts "Cat's Game!"
+    elsif @winner == 'X'
+      puts 'Player 1 (X) wins!'
+    elsif @winner == 'O'
+      puts 'Player 2 (O) wins!'
+    end
+    restart = nil
+    until restart == 'Y' || restart == 'N'
+      print "Play again? (Y/N) "
+      restart = gets.chomp
+      puts ''
+    end
+    restart() if restart == 'Y'
   end
 
   def game_loop
@@ -120,8 +133,9 @@ class Game
   def decide_first_turn
     player = nil
     until player == '1' || player == '2'
-      puts "Which player will go first, 1 or 2?"
-      print "Player: "
+      puts 'Read the rules and then choose who goes first.'
+      puts 'Which player will go first, 1 or 2?'
+      print 'Player: '
       player = gets.chomp
     end
     puts '___________'
@@ -137,11 +151,17 @@ class Game
 
   def rules
     #print the game rules to the console
+    puts('')
+    puts('Welcome to Tic Tac Toe!')
+    puts("\n HOW TO PLAY:")
     puts('Get 3 in a row. X goes first.')
-    puts('Select space by typing in the location.') 
-    puts('Use a - to separate the words.')
-    puts('Examples: ')
-    puts('top-left  bot-right  mid-mid')
+    puts('Player 1 is X and Player 2 is O')
+    puts('Select space by typing in the location in lowercase.') 
+    puts('Use a - to separate the words: row-column ')
+    puts('Valid rows: top, mid, bot')
+    puts('Valid columns: left, mid, right')
+    puts("\n Examples: ")
+    puts('top-left  bot-right  mid-mid  top-mid   mid-right')
     puts('')
   end
 
@@ -270,6 +290,7 @@ class Player
       print "Player #{number} (#{mark}) turn: "
       # get player input for the board
       input = gets.chomp
+      input = 'mid-mid' if input == 'mid'
       # validate player input
       valid = board.valid?(input)
       unless valid then puts 'Invalid move.' end
