@@ -5,21 +5,24 @@ class Game
     @board = Board.new
     @player1 = Player.new('X', 1)
     @player2 = Player.new('O', 2)
-    Game.start()
+    self.start()
   end
 
-  protected
+  private
 
   def start
     tie = false
     rules() #prints the game rules to the console
-    until player1.victory || player2.victory || tie # fix this line
+    # ask who will go first
+
+    until tie # fix this line
       # change the turn
-      #
+      if player1.turn?
+        player1.change_turn
       # update player to current player
       player = player1.turn? ? player1 : player2
       #print the board
-      show_board()
+      show_board(board)
       #ask the player to take their turn
       selection_keys = player.take_turn(board)
       #ask the board for an update
@@ -36,14 +39,28 @@ class Game
 
   end
 
-  def show_board()
-    puts(board.row1.join)
-    puts(board.divider)
-    puts(board.row2.join)
-    puts(board.divider)
-    puts(board.row3.join)
+  def show_board(board)
+    board.display_array.each_with_index do |array, index|
+      puts array.join
+      if index == 0 || index == 1
+        puts board.divider 
+      end
+    end
+    puts ''
+    # puts(board.divider)
+    # puts(board.row2.join)
+    # puts(board.divider)
+    # puts(board.row3.join)
   end
 
+  def decide_first_turn
+    puts "Which player will go first, 1 or 2?"
+    print "Player: "
+    until player == 1 || player == 2
+      player = gets.chomp
+    end
+  end
+  
   public
 
   def rules
@@ -59,10 +76,10 @@ class Game
 end
 
 class Board
-  attr_reader :divider, :board, :display_array, :moves
+  attr_reader :display_array, :divider, :moves
 
-  def initiallize
-    @board = build()
+  def initialize
+    @display_array, @divider, @moves = build()
   end
 
   def valid?(input)
@@ -81,15 +98,15 @@ class Board
 
   def build
     # display_array & divider is what will be displayed on the board
-    @display_array = 
+    display_array = 
       [ #  0           2         4  <--Column indexes
         ['   ', '|', '   ','|','   '], # 0 
         ['   ', '|', '   ','|','   '], # 1
         ['   ', '|', '   ','|','   ']  # 2
       ]                                # ^-- Row indexes 
-    @divider = '-----------'
+    divider = '-----------'
     # moves is the locations of each move
-    @moves = 
+    moves = 
       {
         top: {left: nil, mid: nil, right: nil}, 
         mid: {left: nil, mid: nil, right: nil},
