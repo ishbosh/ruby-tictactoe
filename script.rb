@@ -80,9 +80,12 @@ class Board
   private
 
   def build
-    @row1 = ['   ', '|', '   ','|','   ']
-    @row2 = ['   ', '|', '   ','|','   ']
-    @row3 = ['   ', '|', '   ','|','   ']
+    @row = 
+      [
+        ['   ', '|', '   ','|','   '],
+        ['   ', '|', '   ','|','   '],
+        ['   ', '|', '   ','|','   ']
+      ]
     @divider = '-----------'
     @moves = 
       {
@@ -90,7 +93,7 @@ class Board
         mid: {left: nil, mid: nil, right: nil},
         bot: {left: nil, mid: nil, right: nil}
       }
-    return row1, row2, row3, divider, moves
+    return row, divider, moves
   end
 
   def update_display(player, validated_input)
