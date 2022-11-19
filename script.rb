@@ -207,7 +207,7 @@ class Board
         ['   ', '|', '   ','|','   '], # 1
         ['   ', '|', '   ','|','   ']  # 2
       ]                                # ^-- Row indexes 
-    divider = '-----------'
+    divider = '---+---+---'
     # moves is the locations of each move
     moves = 
       {
