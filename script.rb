@@ -14,14 +14,18 @@ class Game
     tie = false
     rules() #prints the game rules to the console
     until player1.victory || player2.victory || tie # fix this line
-      #print the board
-      board()
-      #ask the player to take their turn
-      
-      #ask the board for an update
-      #check for winner or tie
       # change the turn
-
+      #
+      # update player to current player
+      player = player1.turn? ? player1 : player2
+      #print the board
+      show_board()
+      #ask the player to take their turn
+      selection_keys = player.take_turn(board)
+      #ask the board for an update
+      board.update(player, selection_keys)
+      #check for winner or tie
+      #
     end
     # when there is a winner or tie
     # print the final board
@@ -32,26 +36,7 @@ class Game
 
   end
 
-  # def input(player)
-  #   print "#{player} turn. Select a space: "
-
-  #   space = gets.chomp
-  #   space
-  #   # ask the player for input
-  #   # check validation of the input 
-  #   # if valid, update the input, otherwise, ask again
-  # end
-
-  # def update(player, space)
-  #   #update the board 
-  #   if self.board.update(player, space) == "invalid"
-  #     puts("That space is already taken!")
-  #     space = input(player)
-  #     update(player, space)
-  #   end
-  # end
-
-  def board()
+  def show_board()
     puts(board.row1.join)
     puts(board.divider)
     puts(board.row2.join)
@@ -80,7 +65,19 @@ class Board
     @board = build()
   end
 
-  protected
+  def valid?(input)
+    #check the moves hash for valid input and return whether it is valid
+    # if the key is not found, also return invalid/false
+  end
+
+  def update(player, validated_input)
+    #update_display
+    update_display(player, validated_input)
+    #update moves hash
+    update_moves(player, validated_input)
+  end
+
+  private
 
   def build
     @row1 = ['   ', '|', '   ','|','   ']
@@ -96,7 +93,7 @@ class Board
     return row1, row2, row3, divider, moves
   end
 
-  def update(player, space)
+  def update_display(player, validated_input)
     player == 1 ? mark = ' X ' : mark = ' O '
     case space
     when 1
@@ -120,6 +117,13 @@ class Board
     end
   end
 
+  def update_moves(player, validated_input)
+    # update the moves hash with the new input
+
+    # moves[row][col] = player's mark
+  end
+
+  
 end
 
 class Player
@@ -146,17 +150,26 @@ class Player
     # ask for player input
     print "Player #{number} turn: "
     # get the player's input
-    selection = input(board)
-    selection
+    validated_input = input(board)
+    selection_keys = convert_to_keys(validated_input)
+    selection_keys
   end
 
   private
 
-  # get player input for the board
+  def convert_to_keys(validated_input)
+    # convert the input to the key equivalent
+    array = validated_input.split('-')
+    keys = [array[0].to_sym, array[1].to_sym]
+    keys
+  end
+
   def input(board)
     valid = false
     until valid
+      # get player input for the board
       input = gets.chomp
+      # validate player input
       valid = board.valid?(input)
     end
     input
