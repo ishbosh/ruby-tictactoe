@@ -2,12 +2,15 @@ require_relative 'display.rb'
 
 module TicTacToe
   class Game
-    attr_reader :player1, :player2, :board
+    include DisplayText
+
+    attr_reader :player1, :player2, :board, :players
     
     def initialize
       @board = Board.new
       @player1 = Player.new('X', 1)
       @player2 = Player.new('O', 2)
+      @players = [player1, player2]
       play()
     end
 
@@ -21,8 +24,9 @@ module TicTacToe
     end
 
     def play
+      puts show_intro()
+      puts show_how_to_play()
       @winner = nil
-      rules()
       decide_first_turn()
       game_loop()
       board.show()
@@ -124,39 +128,21 @@ module TicTacToe
     end
 
     def decide_first_turn
-      player = nil
-      until player == '1' || player == '2'
-        puts 'Read the rules and then choose who goes first.'
-        puts 'Which player will go first, 1 or 2?'
-        print 'Player: '
-        player = gets.chomp
+      first_player = nil
+      until first_player == player1.mark || first_player == player2.mark
+        puts show_first_turn_prompt()
+        first_player = gets.chomp.upcase
       end
-      puts '___________'
+      puts show_separator()
       puts ''
-      if player == '1'
-        player1.change_turn
-      elsif player == '2'
-        player2.change_turn
+      players.each do |player|
+        if first_player == player.mark
+        player.change_turn
+        end
       end
     end
 
     public
-
-    def rules
-      #print the game rules to the console
-      puts('')
-      puts('Welcome to Tic Tac Toe!')
-      puts("\n HOW TO PLAY:")
-      puts('Get 3 in a row. X goes first.')
-      puts('Player 1 is X and Player 2 is O')
-      puts('Select space by typing in the location in lowercase.') 
-      puts('Use a - to separate the words: row-column ')
-      puts('Valid rows: top, mid, bot')
-      puts('Valid columns: left, mid, right')
-      puts("\n Examples: ")
-      puts('top-left  bot-right  mid-mid  top-mid   mid-right')
-      puts('')
-    end
 
   end
 
