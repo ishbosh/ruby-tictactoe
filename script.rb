@@ -299,7 +299,7 @@ module TicTacToe
   end
 end
 
-class DisplayText
+module DisplayText
   def show_intro
     'Welcome to Tic-Tac-Toe! Type into the console to play.'
   end
