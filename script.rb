@@ -23,7 +23,7 @@ module TicTacToe
       rules()
       decide_first_turn()
       game_loop()
-      show_board()
+      board.show()
       if @winner == 'tie'
         puts "Cat's Game!"
       elsif @winner == 'X'
@@ -46,7 +46,7 @@ module TicTacToe
         # update player to current player
         player = player1.turn? ? player1 : player2
         #print the board
-        show_board()
+        board.show()
         #ask the player to take their turn
         selection_keys = player.take_turn(board)
         #ask the board for an update
@@ -58,16 +58,6 @@ module TicTacToe
         player1.change_turn
         player2.change_turn
       end
-    end
-
-    def show_board
-      board.display_array.each_with_index do |array, index|
-        puts array.join
-        if index == 0 || index == 1
-          puts board.divider 
-        end
-      end
-      puts ''
     end
 
     def check_for_winner
@@ -175,7 +165,17 @@ module TicTacToe
       @display_array, @divider, @moves = build()
     end
 
-    def valid?(input)
+    def show
+      display_array.each_with_index do |array, index|
+        puts array.join
+        if index == 0 || index == 1
+          puts divider 
+        end
+      end
+      puts ''
+    end
+
+    def valid_move?(input)
       unless input.include?('-')
         return false
       end
@@ -223,24 +223,10 @@ module TicTacToe
       # converts moves keys to display_array indexes
       row_key = selection_keys[0]
       col_key = selection_keys[1]
-      row_index =
-        case row_key
-        when :top
-          0
-        when :mid
-          1
-        when :bot
-          2
-        end
-      col_index =
-        case col_key
-        when :left
-          0
-        when :mid
-          2
-        when :right
-          4
-        end
+      row_hash = {top: 0, mid: 1, bot: 2}
+      col_hash = {left: 0, mid: 2, right: 4}
+      row_index = row_hash[row_key]
+      col_index = col_hash[col_key]
         return row_index, col_index
     end
 
@@ -293,7 +279,7 @@ module TicTacToe
         input = gets.chomp
         input = 'mid-mid' if input == 'mid'
         # validate player input
-        valid = board.valid?(input)
+        valid = board.valid_move?(input)
         unless valid then puts 'Invalid move.' end
       end
       puts ''
@@ -313,5 +299,40 @@ module TicTacToe
   end
 end
 
+class DisplayText
+  def show_intro
+    'Welcome to Tic-Tac-Toe! Type into the console to play.'
+  end
+
+  def show_name_prompt
+    #choose player name
+  end
+
+  def show_turn(player)
+    "Player #{player.number} (#{player.mark}) turn: "
+  end
+
+  def show_how_to_play
+    "Type move location as row-col \n
+    Examples: top-left , mid-right , bot-mid , mid-mid"
+  end
+
+  def show_input_error
+    'Invalid move. Try again. Type '
+  end
+
+  def show_victory(player)
+    "#{player.mark} WINS! Great job #{player.number}!"
+  end
+
+  def show_tie
+    "Cat's game!"
+  end
+
+  def show_restart_prompt
+    'Game over. Play again? Type Y or N : '
+  end
+end
+
 include TicTacToe
-tic_tac_toe = Game.new
+Game.new
