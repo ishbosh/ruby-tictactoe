@@ -56,7 +56,7 @@ module TicTacToe
         #ask the player to take their turn
         selection_keys = player.take_turn(board)
         #ask the board for an update
-        board.update(player, selection_keys)
+        board.update_display(player, selection_keys)
         #check for winner or tie
         @winner = check_for_winner()
         if @winner == 'tie' then tie = true end
@@ -148,19 +148,22 @@ module TicTacToe
 
   class Board
     include DisplayText
-    attr_reader :display_array, :divider, :moves
+    attr_reader :board
 
-    WIN_INDEXES = [
-      [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,8], [2,5,8], [0,4,8], [2,4,6]
-    ]
+    WIN_INDEXES = [[0,1,2], [3,4,5], [6,7,8], [0,3,6],
+                   [1,4,8], [2,5,8], [0,4,8], [2,4,6]].freeze
+
+    MOVE_INDEX_HASH = {top: 0, mid: 1, bot: 2, left: 0, mid: 1, right: 2}.freeze
 
     def initialize
-      @display_array, @divider, @moves = build()
-      @board_spaces = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      @board = 
+      [ ['   ', '   ','   '], 
+        ['   ', '   ','   '], 
+        ['   ', '   ','   '] ] 
     end
 
     def show
-      display_array.each_with_index do |array, index|
+      board.each_with_index do |array, index|
         array.each_with_index do |space, i|
           print space
           print row_divider() if i == 0 || i == 1
@@ -172,59 +175,30 @@ module TicTacToe
     end
 
     def valid_move?(input)
-      
       unless input.include?('-')
         return false
       end
       keys = input.split('-')
-      keys[0] = keys[0].to_sym #eg  :top
-      keys[1] = keys[1].to_sym #eg  :left
-
-
-      if moves.include?(keys[0]) 
-        if moves[keys[0]].include?(keys[1]) && moves[keys[0]][keys[1]] == nil
-            return true
+      keys[0] = keys[0].to_sym #eg.  :top
+      keys[1] = keys[1].to_sym #eg.  :left
+      if MOVE_INDEX_HASH.include?(keys[0]) && MOVE_INDEX_HASH.include?(keys[1])
+        if board[MOVE_INDEX_HASH[keys[0]]][MOVE_INDEX_HASH[keys[1]]] == '  '
+          return true
         end
       else
         return false
       end
     end
 
-    def update(player, selection_keys)
-      #update_display
-      update_display(player, selection_keys)
-      #update moves hash
-      update_moves(player, selection_keys)
-    end
-
     private
-
-    def build
-      # display_array & divider is what will be displayed on the board
-      display_array = 
-        [ 
-          ['   ', '   ','   '], 
-          ['   ', '   ','   '], 
-          ['   ', '   ','   ']  
-        ]                             
-      # moves is the locations of each move
-      moves = 
-        {
-          top: {left: nil, mid: nil, right: nil}, 
-          mid: {left: nil, mid: nil, right: nil},
-          bot: {left: nil, mid: nil, right: nil}
-        }
-      return display_array, divider, moves
-    end
 
     def convert_to_index(selection_keys)
       # converts moves keys to display_array indexes
       row_key = selection_keys[0]
       col_key = selection_keys[1]
-      row_hash = {top: 0, mid: 1, bot: 2}
-      col_hash = {left: 0, mid: 1, right: 2}
-      row_index = row_hash[row_key]
-      col_index = col_hash[col_key]
+      
+      row_index = move_hash[row_key]
+      col_index = move_hash[col_key]
         return row_index, col_index
     end
 
@@ -233,17 +207,8 @@ module TicTacToe
       index_array = convert_to_index(selection_keys)
       row_index = index_array[0]
       col_index = index_array[1]
-      @display_array[row_index][col_index] = " #{player.mark} "
+      @board[row_index][col_index] = " #{player.mark} "
     end
-
-    def update_moves(player, selection_keys)
-      # update the moves hash with the new input
-      row_key = selection_keys[0]
-      col_key = selection_keys[1]
-      @moves[row_key][col_key] = player.mark
-      @moves
-    end
-
     
   end
 
@@ -273,14 +238,12 @@ module TicTacToe
       # get the player's input
       valid = false
       until valid
-        # ask for player input
         print show_turn(self)
-        # get player input for the board
         input = gets.chomp
         input = 'mid-mid' if input == 'mid'
         # validate player input
         valid = board.valid_move?(input)
-        unless valid then puts 'Invalid move.' end
+        unless valid then puts show_input_error() end
       end
       puts ''
       selection_keys = convert_to_keys(input)
