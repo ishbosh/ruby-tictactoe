@@ -147,29 +147,40 @@ module TicTacToe
   end
 
   class Board
+    include DisplayText
     attr_reader :display_array, :divider, :moves
+
+    WIN_INDEXES = [
+      [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,8], [2,5,8], [0,4,8], [2,4,6]
+    ]
 
     def initialize
       @display_array, @divider, @moves = build()
+      @board_spaces = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     end
 
     def show
       display_array.each_with_index do |array, index|
-        puts array.join
-        if index == 0 || index == 1
-          puts divider 
+        array.each_with_index do |space, i|
+          print space
+          print row_divider() if i == 0 || i == 1
         end
+        puts ''
+        puts col_divider() if index == 0 || index == 1
       end
       puts ''
     end
 
     def valid_move?(input)
+      
       unless input.include?('-')
         return false
       end
       keys = input.split('-')
-      keys[0] = keys[0].to_sym
-      keys[1] = keys[1].to_sym
+      keys[0] = keys[0].to_sym #eg  :top
+      keys[1] = keys[1].to_sym #eg  :left
+
+
       if moves.include?(keys[0]) 
         if moves[keys[0]].include?(keys[1]) && moves[keys[0]][keys[1]] == nil
             return true
@@ -191,12 +202,11 @@ module TicTacToe
     def build
       # display_array & divider is what will be displayed on the board
       display_array = 
-        [ #  0           2         4  <--Column indexes
-          ['   ', '|', '   ','|','   '], # 0 
-          ['   ', '|', '   ','|','   '], # 1
-          ['   ', '|', '   ','|','   ']  # 2
-        ]                                # ^-- Row indexes 
-      divider = '---+---+---'
+        [ 
+          ['   ', '   ','   '], 
+          ['   ', '   ','   '], 
+          ['   ', '   ','   ']  
+        ]                             
       # moves is the locations of each move
       moves = 
         {
@@ -212,7 +222,7 @@ module TicTacToe
       row_key = selection_keys[0]
       col_key = selection_keys[1]
       row_hash = {top: 0, mid: 1, bot: 2}
-      col_hash = {left: 0, mid: 2, right: 4}
+      col_hash = {left: 0, mid: 1, right: 2}
       row_index = row_hash[row_key]
       col_index = col_hash[col_key]
         return row_index, col_index

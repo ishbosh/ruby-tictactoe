@@ -43,4 +43,12 @@ module DisplayText
   def show_separator
     '___________'
   end
+
+  def col_divider
+    '---+---+---'
+  end
+
+  def row_divider
+    '|'
+  end
 end
