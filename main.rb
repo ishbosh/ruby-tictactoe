@@ -56,7 +56,7 @@ module TicTacToe
       valid_input = false
       until valid_input
         input = gets.chomp
-        if input == player[0].mark
+        if input == players[0].mark
           show_mark_error()
           show_mark_prompt()
         elsif 
@@ -98,7 +98,7 @@ module TicTacToe
 
     def decide_first_turn
       first_player = nil
-      until first_player == player[0].mark || first_player == player[1].mark
+      until first_player == players[0].mark || first_player == players[1].mark
         puts show_first_turn_prompt()
         first_player = gets.chomp.upcase
       end
