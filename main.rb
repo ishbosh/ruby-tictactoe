@@ -10,8 +10,8 @@ module TicTacToe
     
     def initialize
       @board = Board.new
-      @player1 = Player.new('', 1)
-      @player2 = Player.new('', 2)
+      @player1 = Player.new(nil, nil)
+      @player2 = Player.new(nil, nil)
       @players = [@player1, @player2]
       play()
     end
@@ -47,7 +47,7 @@ module TicTacToe
         print "\nPlayer #{i+1} - "
         print show_name_prompt()
         player.name = gets.chomp
-        show_mark_prompt(player)
+        print show_mark_prompt(player)
         player.mark = player_mark_setup()
       end
     end
