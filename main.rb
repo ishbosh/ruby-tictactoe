@@ -88,8 +88,8 @@ module TicTacToe
       tie = false
       until tie || @winner
         board.show()
-        current_player = players.select {|player| player.turn?}
-        player_turn = current_player[0].take_turn(board)
+        current_player = (players.select {|player| player.turn?}).first
+        player_turn = current_player.take_turn(board)
         board.update_display(current_player, player_turn)
         @winner = board.winner?(current_player)
         tie = board.full?
@@ -146,10 +146,7 @@ module TicTacToe
     end
 
     def update_display(player, selection_keys)
-      # Get the indexes of the selection. Row then Col
-      index_array = convert_to_index(selection_keys)
-      row_index = index_array[0]
-      col_index = index_array[1]
+      row_index, col_index = convert_to_index(selection_keys)
       @board[row_index][col_index] = " #{player.mark} "
     end
 
@@ -158,8 +155,9 @@ module TicTacToe
         return false
       end
       keys = convert_to_keys(input)
+      row_index, col_index = convert_to_index(keys)
       if MOVE_INDEX_HASH.include?(keys[0]) && MOVE_INDEX_HASH.include?(keys[1])
-        if @board[MOVE_INDEX_HASH[keys[0]]][MOVE_INDEX_HASH[keys[1]]] == '   '
+        if @board[row_index][col_index] == '   '
           return true
         end
       else
@@ -167,7 +165,7 @@ module TicTacToe
       end
     end
 
-    def win_move?(current_player)
+    def winner?(current_player)
       flat_board = board.flatten
       WIN_LINES.any? do |line|
         [flat_board[line[0]], 
@@ -183,13 +181,11 @@ module TicTacToe
 
     private
 
-    def convert_to_index(selection_keys)
-      # converts moves keys to display_array indexes
-      row_key = selection_keys[0]
-      col_key = selection_keys[1]
-      
-      row_index = move_hash[row_key]
-      col_index = move_hash[col_key]
+    def convert_to_index(keys)
+      row_key = keys[0]
+      col_key = keys[1]
+      row_index = MOVE_INDEX_HASH[row_key]
+      col_index = MOVE_INDEX_HASH[col_key]
         return row_index, col_index
     end
 
