@@ -151,7 +151,7 @@ module TicTacToe
       end
       keys = convert_to_keys(input)
       if MOVE_INDEX_HASH.include?(keys[0]) && MOVE_INDEX_HASH.include?(keys[1])
-        if @board[MOVE_INDEX_HASH[keys[0]]][MOVE_INDEX_HASH[keys[1]]] == '  '
+        if @board[MOVE_INDEX_HASH[keys[0]]][MOVE_INDEX_HASH[keys[1]]] == '   '
           return true
         end
       else
