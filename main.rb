@@ -12,7 +12,7 @@ module TicTacToe
       @board = Board.new
       @player1 = Player.new('', 1)
       @player2 = Player.new('', 2)
-      @players = [player1, player2]
+      @players = [@player1, @player2]
       play()
     end
 
