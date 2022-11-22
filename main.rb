@@ -39,15 +39,19 @@ module TicTacToe
 
     def intro_text
       puts show_intro()
+      sleep(1)
       puts show_how_to_play()
       puts show_separator()
+      sleep(0.5)
     end
 
     def player_setup
       players.each_with_index do |player, i|
+        sleep(0.5)
         print "\nPlayer #{i+1} - "
         print show_name_prompt()
-        player.name = gets.chomp
+        player.name = gets.chomp.capitalize
+        sleep(0.5)
         print show_mark_prompt(player)
         player.mark = player_mark_setup()
         puts show_separator()
@@ -88,8 +92,9 @@ module TicTacToe
       tie = false
       until tie || @winner
         board.show()
-        current_player = (players.select {|player| player.turn?}).first
+        self.current_player = (players.select {|player| player.turn?}).first
         player_turn = current_player.take_turn(board)
+        puts show_separator()
         board.update_display(current_player, player_turn)
         @winner = board.winner?(current_player)
         tie = board.full?
@@ -221,7 +226,14 @@ module TicTacToe
       valid = false
       until valid
         print show_turn(self)
-        input = gets.chomp
+        input = gets.chomp.downcase
+        if input == 'help' || input == "'help'"
+          puts show_how_to_play()
+          puts show_separator()
+          puts board.show
+          next
+        end
+
         input = 'mid-mid' if input == 'mid'
         valid = board.valid_move?(input)
         unless valid then puts show_input_error() end
