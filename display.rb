@@ -16,12 +16,12 @@ module DisplayText
   end
 
   def show_first_turn_prompt(players)
-    "Enter the mark of the player who will go first: 
-    #{players[0.mark]} or #{players[1.mark]} "
+    "Enter the mark of the player who will go first: " +
+    "#{players[0.mark]} or #{players[1.mark]} "
   end
 
   def show_how_to_play
-    "How To Play: Type move location as row-col"
+    "How To Play: Type move location as row-col" + 
     "\nExamples: top-left , mid-right , bot-mid , mid-mid"
   end
 

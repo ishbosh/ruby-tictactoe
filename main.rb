@@ -56,7 +56,7 @@ module TicTacToe
       valid_input = false
       until valid_input
         input = gets.chomp
-        if input == player1.mark
+        if input == player[0].mark
           show_mark_error()
           show_mark_prompt()
         elsif 
@@ -98,7 +98,7 @@ module TicTacToe
 
     def decide_first_turn
       first_player = nil
-      until first_player == player1.mark || first_player == player2.mark
+      until first_player == player[0].mark || first_player == player[1].mark
         puts show_first_turn_prompt()
         first_player = gets.chomp.upcase
       end
@@ -123,7 +123,7 @@ module TicTacToe
     WIN_LINES = [[0,1,2], [3,4,5], [6,7,8], [0,3,6],
                    [1,4,8], [2,5,8], [0,4,8], [2,4,6]].freeze
 
-    MOVE_INDEX_HASH = {top: 0, mid: 1, bot: 2, left: 0, mid: 1, right: 2}.freeze
+    MOVE_INDEX_HASH = {top: 0, mid: 1, bot: 2, left: 0, right: 2}.freeze
 
     def initialize
       @board = 
@@ -164,6 +164,7 @@ module TicTacToe
         [flat_board[line[0]], 
          flat_board[line[1]], 
          flat_board[line[2]]].uniq.eql?([" #{current_player.mark} "])
+      end
     end
 
     def full?
