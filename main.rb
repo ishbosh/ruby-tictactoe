@@ -145,6 +145,14 @@ module TicTacToe
       puts ''
     end
 
+    def update_display(player, selection_keys)
+      # Get the indexes of the selection. Row then Col
+      index_array = convert_to_index(selection_keys)
+      row_index = index_array[0]
+      col_index = index_array[1]
+      @board[row_index][col_index] = " #{player.mark} "
+    end
+
     def valid_move?(input)
       unless input.include?('-')
         return false
@@ -189,14 +197,6 @@ module TicTacToe
       array = input.split('-')
       keys = [array[0].to_sym, array[1].to_sym]
       keys
-    end
-
-    def update_display(player, selection_keys)
-      # Get the indexes of the selection. Row then Col
-      index_array = convert_to_index(selection_keys)
-      row_index = index_array[0]
-      col_index = index_array[1]
-      @board[row_index][col_index] = " #{player.mark} "
     end
     
   end
