@@ -56,12 +56,10 @@ module TicTacToe
       valid_input = false
       until valid_input
         input = gets.chomp
-        if input == players[0].mark
-          puts show_mark_error()
-          show_mark_prompt()
-        elsif 
-          input.match?(/^[^\s]$/)
+        if input.match?(/^[^\s]$/) && input != players[0].mark
           valid_input = true
+        else
+          puts show_mark_error()
         end
       end
       input
