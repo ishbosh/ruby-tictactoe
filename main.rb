@@ -59,7 +59,7 @@ module TicTacToe
         if input.match?(/^[^\s]$/) && input != players[0].mark
           valid_input = true
         else
-          puts show_mark_error()
+          print show_mark_error()
         end
       end
       input

@@ -18,7 +18,7 @@ module DisplayText
 
   def show_first_turn_prompt(players)
     "Enter the mark of the player who will go first: " +
-    "#{players[0.mark]} or #{players[1.mark]} "
+    "#{players[0].mark} or #{players[1].mark} "
   end
 
   def show_how_to_play
