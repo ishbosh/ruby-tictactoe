@@ -1,66 +1,98 @@
 require_relative 'display.rb'
 
 module TicTacToe
+  ## GAME ##
   class Game
     include DisplayText
 
-    attr_reader :board, :players
+    attr_reader :board
+    attr_accessor :players, :current_player
     
     def initialize
       @board = Board.new
-      @player1 = Player.new('X', 1)
-      @player2 = Player.new('O', 2)
+      @player1 = Player.new('', 1)
+      @player2 = Player.new('', 2)
       @players = [player1, player2]
       play()
     end
 
     private
 
-    def restart
+    def restart!
       @board = Board.new
       players.each {|player| player.turn = false}
       play()
     end
 
     def play
-      puts show_intro()
-      puts show_how_to_play()
-      @winner = nil
+      @current_player = nil
+      @winner = false
+
+      intro_text()
+      player_setup()
       decide_first_turn()
       game_loop()
-      board.show()
-      if @winner == 'tie'
-        puts "Cat's Game!"
-      elsif @winner == 'X'
-        puts 'Player 1 (X) wins!'
-      elsif @winner == 'O'
-        puts 'Player 2 (O) wins!'
+      results()
+
+      restart?()
+    end
+
+    def intro_text
+      puts show_intro()
+      puts show_how_to_play()
+    end
+
+    def player_setup
+      players.each_with_index do |player, i|
+        print "\nPlayer #{i+1} - "
+        print show_name_prompt()
+        player.name = gets.chomp
+        show_mark_prompt(player)
+        player.mark = player_mark_setup()
       end
-      restart = nil
-      until restart == 'Y' || restart == 'N'
-        print "Play again? (Y/N) "
-        restart = gets.chomp
-        puts ''
+    end
+
+    def player_mark_setup
+      valid_input = false
+      until valid_input
+        input = gets.chomp
+        if input == player1.mark
+          show_mark_error()
+          show_mark_prompt()
+        elsif 
+          input.match?(/^[^0-9]$/)
+          valid_input = true
+        end
       end
-      restart() if restart == 'Y'
+      input
+    end
+
+    def results
+      if @winner
+        puts show_victory(current_player) 
+      else
+        puts show_tie()
+      end
+    end
+
+    def restart?
+      positive_answers = ['Y', 'YES', 'RESTART']
+      restart = false
+      puts show_restart_prompt()
+      answer = gets.chomp
+      restart!() if positive_answers.include?(answer.upcase)
     end
 
     def game_loop
       tie = false
       until tie || @winner
-        # update player to current player
         current_player = players.select {|player| player.turn?}
-        #print the board
-        board.show()
-        #ask the player to take their turn
-        selection_keys = current_player.take_turn(board)
-        #ask the board for an update
-        board.update_display(current_player, selection_keys)
-        #check for winner or tie
+        player_turn = current_player.take_turn(board)
+        board.update_display(current_player, player_turn)
         @winner = board.winner?(current_player)
-        @tie = board.full?
-        # change the turns (called on both players to swap each one's turn value)
+        tie = board.full?
         players.each {|player| player.change_turn}
+        board.show()
       end
     end
 
@@ -70,8 +102,8 @@ module TicTacToe
         puts show_first_turn_prompt()
         first_player = gets.chomp.upcase
       end
+      puts "#{first_player} will go first."
       puts show_separator()
-      puts ''
       players.each do |player|
         if first_player == player.mark
         player.change_turn
@@ -82,7 +114,8 @@ module TicTacToe
     public
 
   end
-########### - NEW CLASS:
+
+  ## BOARD ##
   class Board
     include DisplayText
     attr_reader :board
@@ -165,16 +198,16 @@ module TicTacToe
     end
     
   end
-  ########## - NEW CLASS:
+
+  ## PLAYER ##
   class Player
     include DisplayText
 
-    attr_reader :mark, :number
-    attr_accessor :turn
+    attr_accessor :turn, :mark, :name
 
-    def initialize(mark, number)
+    def initialize(mark, name)
       @mark = mark
-      @number = number
+      @name = name
       @turn = false
     end
 

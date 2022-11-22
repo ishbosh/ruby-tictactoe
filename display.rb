@@ -4,19 +4,20 @@ module DisplayText
   end
 
   def show_name_prompt
-    #choose player name
+    "Choose a name: "
   end
 
-  def show_mark_prompt
-    #choose player mark
+  def show_mark_prompt(player)
+    "\n#{player.name} Choose a symbol to mark the board with: "
   end
 
   def show_turn(player)
-    "Player #{player.number} (#{player.mark}) turn: "
+    "#{player.mark} - #{player.name}'s turn: "
   end
 
-  def show_first_turn_prompt
-    'Enter the symbol for the player who will go first: '
+  def show_first_turn_prompt(players)
+    "Enter the mark of the player who will go first: 
+    #{players[0.mark]} or #{players[1.mark]} "
   end
 
   def show_how_to_play
@@ -25,7 +26,11 @@ module DisplayText
   end
 
   def show_input_error
-    'Invalid move. Try again. Type '
+    'Invalid move. Try again.'
+  end
+
+  def show_mark_error
+    'Invalid mark choice. Must be 1 character and different from other player.'
   end
 
   def show_victory(player)
@@ -37,11 +42,12 @@ module DisplayText
   end
 
   def show_restart_prompt
-    'Game over. Play again? Type Y or N : '
+    'Game over. Play again? Type Y to restart or N to exit: '
   end
 
   def show_separator
     '___________'
+    "\n"
   end
 
   def col_divider
