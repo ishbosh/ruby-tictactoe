@@ -1,6 +1,8 @@
 module DisplayText
   def show_intro
-    'Welcome to Tic-Tac-Toe!'
+    "\n------------------------"+
+    "\n Welcome to Tic-Tac-Toe!"+
+    "\n------------------------"
   end
 
   def show_name_prompt
@@ -22,7 +24,7 @@ module DisplayText
   end
 
   def show_how_to_play
-    "How To Play: Type move location as row-col" + 
+    "\nHow To Play: Type move location as row-col" + 
     "\nExamples: top-left , mid-right , bot-mid , mid-mid"
   end
 
@@ -31,7 +33,7 @@ module DisplayText
   end
 
   def show_mark_error
-    'Invalid mark choice. Must be 1 character and different from other player' +
+    "\nInvalid mark choice. Must be 1 character, different from other player." +
     "\n Choose symbol to mark the board with:  "
   end
 
@@ -48,7 +50,7 @@ module DisplayText
   end
 
   def show_separator
-    '___________'
+    '______________________'
     "\n"
   end
 

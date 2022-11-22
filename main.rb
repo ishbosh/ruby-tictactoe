@@ -40,6 +40,7 @@ module TicTacToe
     def intro_text
       puts show_intro()
       puts show_how_to_play()
+      puts show_separator()
     end
 
     def player_setup
@@ -49,13 +50,14 @@ module TicTacToe
         player.name = gets.chomp
         print show_mark_prompt(player)
         player.mark = player_mark_setup()
+        puts show_separator()
       end
     end
 
     def player_mark_setup
       valid_input = false
       until valid_input
-        input = gets.chomp
+        input = gets.chomp.upcase
         if input.match?(/^[^\s]$/) && input != players[0].mark
           valid_input = true
         else
@@ -66,6 +68,7 @@ module TicTacToe
     end
 
     def results
+      board.show() # Show final board.
       if @winner
         puts show_victory(current_player) 
       else
@@ -84,13 +87,13 @@ module TicTacToe
     def game_loop
       tie = false
       until tie || @winner
+        board.show()
         current_player = players.select {|player| player.turn?}
-        player_turn = current_player.take_turn(board)
+        player_turn = current_player[0].take_turn(board)
         board.update_display(current_player, player_turn)
         @winner = board.winner?(current_player)
         tie = board.full?
         players.each {|player| player.change_turn}
-        board.show()
       end
     end
 
@@ -148,7 +151,7 @@ module TicTacToe
       end
       keys = convert_to_keys(input)
       if MOVE_INDEX_HASH.include?(keys[0]) && MOVE_INDEX_HASH.include?(keys[1])
-        if board[MOVE_INDEX_HASH[keys[0]]][MOVE_INDEX_HASH[keys[1]]] == '  '
+        if @board[MOVE_INDEX_HASH[keys[0]]][MOVE_INDEX_HASH[keys[1]]] == '  '
           return true
         end
       else
@@ -210,24 +213,20 @@ module TicTacToe
       @turn = false
     end
 
-    # ask player if it is their turn
     def turn?
       turn
     end
 
-    # if it is this player's turn, switch turns
     def change_turn
       self.turn? ? self.turn = false : self.turn = true
     end
 
     def take_turn(board)
-      # get the player's input
       valid = false
       until valid
         print show_turn(self)
         input = gets.chomp
         input = 'mid-mid' if input == 'mid'
-        # validate player input
         valid = board.valid_move?(input)
         unless valid then puts show_input_error() end
       end
