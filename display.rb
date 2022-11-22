@@ -32,7 +32,7 @@ module DisplayText
   end
 
   def show_input_error
-    "Invalid move. Try again. Type 'help' to see how to play."
+    "Invalid move. Try again. Type 'help' to see how to play.\n "
   end
 
   def show_mark_error

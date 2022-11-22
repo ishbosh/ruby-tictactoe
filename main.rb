@@ -13,7 +13,7 @@ module TicTacToe
       @player1 = Player.new(nil, nil)
       @player2 = Player.new(nil, nil)
       @players = [@player1, @player2]
-      play()
+      game_setup
     end
 
     private
@@ -21,20 +21,23 @@ module TicTacToe
     def restart!
       @board = Board.new
       players.each {|player| player.turn = false}
-      play()
+      play
+    end
+
+    def game_setup
+      intro_text
+      player_setup
+      play
     end
 
     def play
       @current_player = nil
       @winner = false
 
-      intro_text()
-      player_setup()
-      decide_first_turn()
-      game_loop()
-      results()
-
-      restart?()
+      decide_first_turn
+      game_loop
+      results
+      restart?
     end
 
     def intro_text
@@ -42,7 +45,6 @@ module TicTacToe
       sleep(1)
       puts show_how_to_play()
       puts show_separator()
-      sleep(0.5)
     end
 
     def player_setup
@@ -104,14 +106,16 @@ module TicTacToe
 
     def decide_first_turn
       first_player = nil
-      until first_player == players[0].mark || first_player == players[1].mark
+      choices = [players[0].mark, players[1].mark, 
+                 players[0].name, players[1].name]
+      until choices.include?(first_player)
         puts show_first_turn_prompt(players)
-        first_player = gets.chomp.upcase
+        first_player = gets.chomp.downcase.capitalize
       end
       puts "#{first_player} will go first."
       puts show_separator()
       players.each do |player|
-        if first_player == player.mark
+        if [player.mark, player.name].include?(first_player)
         player.change_turn
         end
       end
@@ -127,7 +131,7 @@ module TicTacToe
     attr_reader :board
 
     WIN_LINES = [[0,1,2], [3,4,5], [6,7,8], [0,3,6],
-                   [1,4,8], [2,5,8], [0,4,8], [2,4,6]].freeze
+                   [1,4,7], [2,5,8], [0,4,8], [2,4,6]].freeze
 
     MOVE_INDEX_HASH = {top: 0, mid: 1, bot: 2, left: 0, right: 2}.freeze
 
@@ -236,25 +240,19 @@ module TicTacToe
 
         input = 'mid-mid' if input == 'mid'
         valid = board.valid_move?(input)
-        unless valid then puts show_input_error() end
+        unless valid then puts show_input_error end
       end
       puts ''
-      selection_keys = convert_to_keys(input)
-      selection_keys
+      convert_to_keys(input)
     end
 
     private
 
     def convert_to_keys(input)
       array = input.split('-')
-      keys = [array[0].to_sym, array[1].to_sym]
-      keys
+      [array[0].to_sym, array[1].to_sym]
     end
-
   end
+
+  Game.new
 end
-
-
-
-include TicTacToe
-Game.new
