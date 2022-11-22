@@ -8,7 +8,8 @@ module DisplayText
   end
 
   def show_mark_prompt(player)
-    "\n#{player.name} Choose a symbol to mark the board with: "
+    "\n#{player.name}, choose a symbol to mark the board with." +
+    "\n Your mark must be ONE character:  "
   end
 
   def show_turn(player)
@@ -30,7 +31,8 @@ module DisplayText
   end
 
   def show_mark_error
-    'Invalid mark choice. Must be 1 character and different from other player.'
+    'Invalid mark choice. Must be 1 character and different from other player' +
+    "\n Choose symbol to mark the board with:  "
   end
 
   def show_victory(player)

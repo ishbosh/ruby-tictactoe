@@ -57,10 +57,10 @@ module TicTacToe
       until valid_input
         input = gets.chomp
         if input == players[0].mark
-          show_mark_error()
+          puts show_mark_error()
           show_mark_prompt()
         elsif 
-          input.match?(/^[^0-9]$/)
+          input.match?(/^[^\s]$/)
           valid_input = true
         end
       end
@@ -99,7 +99,7 @@ module TicTacToe
     def decide_first_turn
       first_player = nil
       until first_player == players[0].mark || first_player == players[1].mark
-        puts show_first_turn_prompt()
+        puts show_first_turn_prompt(players)
         first_player = gets.chomp.upcase
       end
       puts "#{first_player} will go first."
