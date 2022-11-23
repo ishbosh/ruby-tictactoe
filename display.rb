@@ -3,9 +3,9 @@
 # Displays the Text for the tic tac toe module
 module DisplayText
   def show_intro
-    "\n      ------------------------" \
+    "\n      -----------------------" \
       "\n      Welcome to Tic-Tac-Toe!" \
-      "\n      ------------------------"
+      "\n      -----------------------"
   end
 
   def show_name_prompt
@@ -36,7 +36,8 @@ module DisplayText
       " \n  Type move location as row-column" \
       "\n\nValid Moves:\n   top-left , top-mid , top-right" \
       "\n   mid-left ,   mid   , mid-right" \
-      "\n   bot-left , bot-mid , bot-right\n "
+      "\n   bot-left , bot-mid , bot-right\n " +
+      show_separator
   end
 
   def show_input_error
@@ -65,7 +66,7 @@ module DisplayText
   end
 
   def show_separator
-    '     _______________________' \
+    '      _______________________' \
       "\n "
   end
 

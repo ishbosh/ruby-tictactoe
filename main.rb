@@ -48,7 +48,6 @@ module TicTacToe
       puts show_intro
       sleep(1)
       puts show_how_to_play
-      puts show_separator
     end
 
     def player_setup
@@ -114,6 +113,7 @@ module TicTacToe
 
         puts show_turn_prompt_error
       end
+      puts show_separator
       @current_player_index = 1 unless player_info[0..1].include?(first_turn)
     end
 
@@ -150,8 +150,8 @@ module TicTacToe
     def show
       print_conditions = [0, 1]
       board.each_with_index do |array, index|
-        array.each_with_index do |space, i|
-          print space
+        array.each_with_index do |grid_space, i|
+          print grid_space
           print row_divider if print_conditions.include?(i)
         end
         puts ''
@@ -187,7 +187,7 @@ module TicTacToe
     end
 
     def full?
-      open_space = board.flatten.select { |space| space == '   ' }
+      open_space = board.flatten.select { |grid_space| grid_space == '   ' }
       open_space.empty?
     end
 
@@ -206,8 +206,7 @@ module TicTacToe
 
     def help
       puts show_how_to_play
-      puts show_separator
-      puts board.show
+      puts show # show board
     end
   end
 
