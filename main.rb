@@ -149,13 +149,13 @@ module TicTacToe
 
     def show
       board.each_with_index do |array, index|
-        print '            '
+        print '            ' # extra space to center
         array.each_with_index do |grid_space, i|
           print grid_space
           print row_divider if [0, 1].include?(i)
         end
         puts ''
-        puts "            #{col_divider}" if [0, 1].include?(index)
+        puts "            #{col_divider}" if [0, 1].include?(index) # center
       end
       puts ''
     end
