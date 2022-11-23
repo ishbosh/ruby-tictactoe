@@ -148,14 +148,14 @@ module TicTacToe
     end
 
     def show
-      print_conditions = [0, 1]
       board.each_with_index do |array, index|
+        print '            '
         array.each_with_index do |grid_space, i|
           print grid_space
-          print row_divider if print_conditions.include?(i)
+          print row_divider if [0, 1].include?(i)
         end
         puts ''
-        puts col_divider if print_conditions.include?(index)
+        puts "            #{col_divider}" if [0, 1].include?(index)
       end
       puts ''
     end
