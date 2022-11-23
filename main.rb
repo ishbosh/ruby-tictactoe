@@ -9,13 +9,12 @@ module TicTacToe
     include DisplayText
 
     attr_reader :board
-    attr_accessor :players, :current_player
+    attr_accessor :players
 
     def initialize
       @board = Board.new
-      @player1 = Player.new(nil, nil)
-      @player2 = Player.new(nil, nil)
-      @players = [@player1, @player2]
+      @players = [Player.new, Player.new]
+      @current_player_index = 0
       game_setup
     end
 
@@ -23,7 +22,7 @@ module TicTacToe
 
     def restart!
       @board = Board.new
-      players.each { |player| player.turn = false }
+      @current_player_index = 0
       play
     end
 
@@ -37,7 +36,9 @@ module TicTacToe
       @current_player = nil
       @winner = false
 
+      puts show_first_turn_prompt(players)
       decide_first_turn
+      show_first_turn(current_player)
       game_loop
       results
       restart?
@@ -55,11 +56,9 @@ module TicTacToe
         sleep(0.5)
         print "\nPlayer #{i + 1} - "
         print show_name_prompt
-        player.name = gets.chomp.capitalize
-        sleep(0.5)
+        player.name = gets.chomp.downcase.capitalize
         print show_mark_prompt(player)
         player.mark = player_mark_setup
-        puts show_separator
       end
     end
 
@@ -78,7 +77,7 @@ module TicTacToe
 
     def results
       board.show # Show final board.
-      if @winner
+      if board.winner?(current_player)
         puts show_victory(current_player)
       else
         puts show_tie
@@ -95,30 +94,36 @@ module TicTacToe
     def game_loop
       loop do
         board.show
-        self.current_player = (players.select(&:turn?)).first
-        player_turn = current_player.take_turn(board)
-        puts show_separator
-        board.update_display(current_player, player_turn)
-        @winner = board.winner?(current_player)
-        break if board.full? || @winner
+        player_input = current_player.take_turn(board)
+        board.update_display(current_player, player_input)
+        break if board.full? || board.winner?(current_player)
 
-        players.each(&:change_turn)
+        next_player_turn
       end
     end
 
+    def current_player
+      @players[@current_player_index]
+    end
+
     def decide_first_turn
-      first_player = nil
-      choices = [players[0].mark, players[1].mark,
-                 players[0].name, players[1].name]
-      until choices.include?(first_player)
-        puts show_first_turn_prompt(players)
-        first_player = gets.chomp.downcase.capitalize
+      first_turn = nil
+      loop do
+        first_turn = gets.chomp.downcase.capitalize
+        break if player_info.include?(first_turn)
+
+        puts show_turn_prompt_error
       end
-      puts "#{first_player} will go first."
+      @current_player_index = 1 unless player_info[0..1].include?(first_turn)
+    end
+
+    def next_player_turn
       puts show_separator
-      players.each do |player|
-        player.change_turn if [player.mark, player.name].include?(first_player)
-      end
+      @current_player_index = (@current_player_index + 1) % @players.size
+    end
+
+    def player_info
+      [players[0].mark, players[0].name, players[1].mark, players[1].name]
     end
   end
 
@@ -186,8 +191,6 @@ module TicTacToe
       open_space.empty?
     end
 
-    private
-
     def convert_to_index(keys)
       row_key = keys[0]
       col_key = keys[1]
@@ -200,6 +203,12 @@ module TicTacToe
       array = input.split('-')
       [array[0].to_sym, array[1].to_sym]
     end
+
+    def help
+      puts show_how_to_play
+      puts show_separator
+      puts board.show
+    end
   end
 
   ## PLAYER ##
@@ -208,28 +217,19 @@ module TicTacToe
 
     attr_accessor :turn, :mark, :name
 
-    def initialize(mark, name)
-      @mark = mark
-      @name = name
-      @turn = false
-    end
-
-    def turn?
-      turn
-    end
-
-    def change_turn
-      self.turn = turn ? false : true
+    def initialize
+      @mark = nil
+      @name = nil
     end
 
     def take_turn(board)
       loop do
         input = player_input
         if ['help', "'help'"].include?(input)
-          help
+          board.help
           next
         end
-        return convert_to_keys(input) if board.valid_move?(input)
+        return board.convert_to_keys(input) if board.valid_move?(input)
 
         puts show_input_error
       end
@@ -242,17 +242,6 @@ module TicTacToe
       input = gets.chomp.downcase
       input = 'mid-mid' if input == 'mid'
       input
-    end
-
-    def help
-      puts show_how_to_play
-      puts show_separator
-      puts board.show
-    end
-
-    def convert_to_keys(input)
-      array = input.split('-')
-      [array[0].to_sym, array[1].to_sym]
     end
   end
 

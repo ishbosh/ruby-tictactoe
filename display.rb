@@ -22,8 +22,13 @@ module DisplayText
   end
 
   def show_first_turn_prompt(players)
-    "\nEnter the mark of the player who will go first: " \
+    "\nEnter the mark or name of the player who will go first: " \
       "#{players[0].mark} or #{players[1].mark} "
+  end
+
+  def show_first_turn(player)
+    "#{player} will go first." +
+      show_separator
   end
 
   def show_how_to_play
@@ -41,6 +46,10 @@ module DisplayText
   def show_mark_error
     "\nInvalid mark choice. Must be 1 character, different from other player." \
       "\n Choose symbol to mark the board with:  "
+  end
+
+  def show_turn_prompt_error
+    'Invalid name or mark. Enter name or mark of player who will go first.'
   end
 
   def show_victory(player)
